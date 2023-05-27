@@ -23,7 +23,7 @@ def summarize_code(code):
 
 
 def read_code_from_file(file_path):
-    with open(file_path, 'r') as file:
+    with open(file_path, 'r', encoding='utf-8') as file:
         code = file.read()
     return code
 
@@ -54,11 +54,20 @@ def contribution(code):
     return 'All contributions are welcome! Please open an issue or submit a pull request.'
 
 
-def write_readme(summary, requirements, usage, contribute_message):
+def check_env_variables(code):
+    env_vars = re.findall(r'os\.getenv\(["\'](.*?)["\']\)', code)
+    return env_vars
+
+
+def check_openai_usage(code):
+    return 'openai' in code
+
+
+def write_readme(summary, requirements, usage, contribute_message, env_vars, openai_used):
     with open('README.md', 'w') as file:
-        file.write('## About\n\n')
+        file.write('## :space_invader: About\n\n')
         file.write(f'{summary}\n\n')
-        file.write('## Requirements\n\n')
+        file.write('## :wrench: Requirements\n\n')
         if 'requirements.txt' in os.listdir('.'):
             file.write('To install the necessary dependencies, run the following command:\n\n')
             file.write('```bash\n')
@@ -69,14 +78,23 @@ def write_readme(summary, requirements, usage, contribute_message):
             for requirement in requirements:
                 file.write(f'- {requirement}\n')
             file.write('\n\n')
-        file.write('## Usage\n\n')
+        if openai_used:
+            file.write('## :rocket: OpenAI API\n\n')
+            file.write('This application uses the OpenAI API. You will need to obtain an API key from the [OpenAI website](https://openai.com/), '
+                       'and add it to your environment variables or a .env file in the project root with the key `OPENAI_API_KEY`.\n\n')
+        if env_vars:
+            file.write('## :shipit: Environment Variables\n\n')
+            file.write('This application uses the following environment variables, which need to be added to a .env file in the project root:\n\n')
+            for var in env_vars:
+                file.write(f'- {var}\n')
+            file.write('\n\n')
+        file.write('## :runner:  Usage\n\n')
         file.write(usage)
         file.write('\n\n')
-        file.write('## Contribuition\n\n')
+        file.write('## :raising_hand: Contribution')
+        file.write('\n\n')
         file.write(contribute_message)
         file.write('\n\n')
-
-
 
 
 def main():
@@ -89,8 +107,10 @@ def main():
     requirements = read_requirements(code)
     usage = infer_usage(code)
     contribute_message = contribution(code)
+    env_vars = check_env_variables(code)
+    openai_used = check_openai_usage(code)
 
-    write_readme(summary, requirements, usage, contribute_message)
+    write_readme(summary, requirements, usage, contribute_message, env_vars, openai_used)
     print("README.md file has been generated.")
 
 
