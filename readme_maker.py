@@ -39,10 +39,10 @@ def read_requirements(code):
     return requirements
 
 
-def infer_usage(code):
+def infer_usage(code, file_path):
     response = openai.Completion.create(
         engine="text-davinci-003",
-        prompt=f"\nHow to run the following code in the terminal: {code}\n",
+        prompt=f"\nHow to run the following code in the terminal: {code}\n Considering the the filename of the code is {file_path}",
         temperature=0.5,
         max_tokens=300
     )
@@ -105,7 +105,7 @@ def main():
     code = read_code_from_file(args.file_path)
     summary = summarize_code(code)
     requirements = read_requirements(code)
-    usage = infer_usage(code)
+    usage = infer_usage(code, args.file_path)
     contribute_message = contribution(code)
     env_vars = check_env_variables(code)
     openai_used = check_openai_usage(code)
