@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='readme-maker ',
+    name='readme-maker',
     version='0.1.0',
     url='https://github.com/estevaofon/GPT-README-maker',
     author='Estevao',
@@ -11,7 +11,7 @@ setup(
     install_requires=['openai', 'python-dotenv'],
     entry_points={
         'console_scripts': [
-            'readme-maker = readme-maker:main',
+            'readme-maker = readme_maker:main',
         ],
     },
 )
